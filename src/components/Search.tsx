@@ -1,7 +1,9 @@
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Autocomplete, TextField } from "@mui/material";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const locations = [
   "kondapur",
@@ -20,19 +22,62 @@ const locations = [
 ];
 
 function Search() {
-  const [openedLongSearchBar, setOpenedLongSearchBar] = useState(false);
+  const getInitialDate = (type: string) => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(`${type}-date`) || new Date().toISOString().split("T")[0];
+  };
 
-  function handleSearchBar() {
-    setOpenedLongSearchBar(!openedLongSearchBar);
+  const [openedLongSearchBar, setOpenedLongSearchBar] = useState(false);
+  const [startDate, setStartDate] = useState<Date | null>(
+    new Date(getInitialDate("start"))
+  );
+  const [endDate, setEndDate] = useState<Date | null>(
+    new Date(getInitialDate("end"))
+  );
+
+  useEffect(
+    function () {
+      const url = new URL(window.location);
+      url.searchParams.set(
+        "start-date",
+        new Date(startDate || "").toLocaleString()
+      );
+      url.searchParams.set(
+        "end-date",
+        new Date(endDate || "").toLocaleString()
+      );
+      window.history.pushState({}, "", url);
+    },
+    [startDate, endDate]
+  );
+
+  function handleSearchBar(e) {
+    e.stopPropagation();
+    if (e.currentTarget === e.target) {
+      setOpenedLongSearchBar(!openedLongSearchBar);
+    }
   }
+  const StartDateProvider = forwardRef(({ value, onClick, className }, ref) => (
+    <button className={className} onClick={onClick} ref={ref}>
+      {new Date(startDate || "").toLocaleString("default", {
+        month: "short",
+        day: "numeric",
+      })}
+    </button>
+  ));
+  const EndDateProvider = forwardRef(({ value, onClick, className }, ref) => (
+    <button className={className} onClick={onClick} ref={ref}>
+      {new Date(endDate || "").toLocaleString("default", {
+        month: "short",
+        day: "numeric",
+      })}
+    </button>
+  ));
 
   return (
     <div
-      onClick={(e) => {
-        e.stopPropagation();
-        handleSearchBar();
-      }}
-      className={`bg-white rounded-2xl flex items-center pl-4 max-w-fit text-sm transform-all duration-500 ${
+      onClick={handleSearchBar}
+      className={`bg-white rounded-2xl flex items-center pl-4 min-w-fit max-w-min text-sm transform-all duration-500 ${
         openedLongSearchBar ? "shadow-2xl" : "shadow-md"
       }`}
     >
@@ -44,10 +89,39 @@ function Search() {
         >
           Campaign Duration
         </p>
-        <div className="space-x-2">
-          <span>Feb 6</span>
-          <span className="text-gray-500">to</span>
-          <span>Feb 12</span>
+        <div className="space-x-2 flex">
+          {openedLongSearchBar ? (
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              customInput={
+                <StartDateProvider className="example-custom-input" />
+              }
+            />
+          ) : (
+            <span>
+              {new Date(startDate || "").toLocaleString("default", {
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          )}
+          <span>to</span>
+          {openedLongSearchBar ? (
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              customInput={<EndDateProvider className="example-custom-input" />}
+            />
+          ) : (
+            <span>
+              {new Date(endDate || "").toLocaleString("default", {
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          )}
+
           <span className="text-gray-400">|</span>
           <span>1 week</span>
         </div>
@@ -65,7 +139,7 @@ function Search() {
             <span className="text-gray-500 whitespace-nowrap">
               Hyderbad <KeyboardArrowDownIcon />
             </span>
-            <div className="w-[12rem]" onClick={(e) => e.stopPropagation()}>
+            <div className="w-[16rem]" onClick={(e) => e.stopPropagation()}>
               <Autocomplete
                 multiple
                 id="tags-standard"
@@ -75,9 +149,8 @@ function Search() {
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <span
-                      key={index}
                       {...getTagProps({ index })}
-                      className="bg-gray-200 rounded-full px-2 py-1 text-sm mr-1 mb-1"
+                      className="bg-gray-200 rounded-full px-2 py-1 text-sm mr-1 mb-1 whitespace-nowrap"
                     >
                       {option}
                     </span>

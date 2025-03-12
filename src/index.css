@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.new {
+  @apply bg-violet-500 text-white;
+}

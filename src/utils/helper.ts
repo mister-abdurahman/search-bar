@@ -30,3 +30,18 @@ export const isMonday = (date: Date) => {
 export const isSunday = (date: Date) => {
   return date.getDay() === 0;
 };
+export const locations = [
+  "kondapur",
+  "Madhapur",
+  "Gachibowli",
+  "Hitech City",
+  "Kukatpally",
+  "Begumpet",
+  "Secunderabad",
+  "Banjara Hills",
+  "Jubilee Hills",
+  "Ameerpet",
+  "Somajiguda",
+  "Begumpet",
+  "Kothaguda",
+];

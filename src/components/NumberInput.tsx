@@ -11,8 +11,8 @@ const NumberInput = ({ value, setValue }: IProps) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event?.target?.value;
+    setValue(+newValue);
     if (+newValue >= 2 && +newValue <= 10) {
-      setValue(+newValue);
       setError(false);
     } else {
       setError(true);
@@ -21,19 +21,22 @@ const NumberInput = ({ value, setValue }: IProps) => {
 
   return (
     <TextField
-      type="number"
       label=""
-      variant="standard"
       value={value}
       onChange={handleChange}
-      inputProps={{
-        min: 2,
-        max: 10,
-        sx: { fontSize: "0.75rem" },
-      }}
+      variant="standard"
       error={error}
-      helperText={error ? "Value must be between 2 and 10" : ""}
+      helperText={error ? "Please enter a number between 2 and 10" : ""}
       margin="normal"
+      inputProps={{
+        inputMode: "numeric",
+        pattern: "[0-9]*",
+      }}
+      FormHelperTextProps={{
+        sx: {
+          fontSize: "0.6rem",
+        },
+      }}
     />
   );
 };

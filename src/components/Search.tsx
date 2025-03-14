@@ -1,28 +1,8 @@
-import SearchIcon from "@mui/icons-material/Search";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import CancelIcon from "@mui/icons-material/Cancel";
-import { forwardRef, useState } from "react";
-import { Autocomplete, Chip, TextField } from "@mui/material";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { calculateDateDifference, isMonday, isSunday } from "../utils/helper";
-import NumberInput from "./NumberInput";
-
-const locations = [
-  "kondapur",
-  "Madhapur",
-  "Gachibowli",
-  "Hitech City",
-  "Kukatpally",
-  "Begumpet",
-  "Secunderabad",
-  "Banjara Hills",
-  "Jubilee Hills",
-  "Ameerpet",
-  "Somajiguda",
-  "Begumpet",
-  "Kothaguda",
-];
+import { useEffect, useState } from "react";
+import CampaignDuration from "./CampaignDuration";
+import PrefferedLocations from "./PrefferedLocations";
+import Radius from "./Radius";
+import SearchButton from "./SearchButton";
 
 function Search() {
   const getInitialDate = (type: string) => {
@@ -54,17 +34,22 @@ function Search() {
     getInitialLocations()
   );
 
-  function saveToUrl() {
-    const url = new URL(window.location.href);
-    url.searchParams.set("start-date", startDate?.toLocaleString() || "");
-    url.searchParams.set("end-date", endDate?.toLocaleString() || "");
-    url.searchParams.set(
-      "locations",
-      selectedLocations?.toLocaleString() || "[]"
-    );
-    url.searchParams.set("km", kmValue?.toLocaleString() || "");
-    window.history.pushState({}, "", url);
-  }
+  useEffect(
+    function () {
+      const url = new URL(window.location.href);
+      url.searchParams.set("start-date", startDate?.toLocaleString() || "");
+      url.searchParams.set("end-date", endDate?.toLocaleString() || "");
+      url.searchParams.set(
+        "locations",
+        selectedLocations?.toLocaleString() || "[]"
+      );
+      if (kmValue >= 2 || kmValue <= 10) {
+        url.searchParams.set("km", kmValue?.toLocaleString() || "");
+      }
+      window.history.pushState({}, "", url);
+    },
+    [kmValue, startDate, endDate, selectedLocations]
+  );
 
   function handleSearchBar(e: React.MouseEvent<HTMLDivElement>) {
     e.stopPropagation();
@@ -72,214 +57,40 @@ function Search() {
       setOpenedLongSearchBar(!openedLongSearchBar);
     }
   }
-  const StartDateProvider = forwardRef<
-    HTMLButtonElement,
-    { onClick: () => void }
-  >(({ onClick }, ref) => (
-    <button onClick={onClick} ref={ref}>
-      {new Date(startDate || "").toLocaleString("default", {
-        month: "short",
-        day: "numeric",
-      })}
-    </button>
-  ));
-  const EndDateProvider = forwardRef<
-    HTMLButtonElement,
-    { onClick: () => void }
-  >(({ onClick }, ref) => (
-    <button onClick={onClick} ref={ref}>
-      {new Date(endDate || "").toLocaleString("default", {
-        month: "short",
-        day: "numeric",
-      })}
-    </button>
-  ));
 
   return (
     <div
       onClick={handleSearchBar}
-      className={`bg-white rounded-2xl flex items-center pl-4 min-w-fit max-w-min text-sm transform-all duration-500 ${
-        openedLongSearchBar ? "shadow-2xl" : "shadow-md"
+      className={`bg-white rounded-2xl flex items-center pl-4 text-sm transition-all duration-500 ${
+        openedLongSearchBar
+          ? "shadow-2xl max-w-[80rem]"
+          : "shadow-md max-w-[50rem]"
       }`}
     >
-      <div className="flex flex-col py-3 border-r border-gray-300 pr-4">
-        <p
-          className={`text-rose-800 transform-all duration-500 ${
-            openedLongSearchBar ? "block" : "hidden"
-          }`}
-        >
-          Campaign Duration
-        </p>
-        <div className="space-x-2 flex">
-          {openedLongSearchBar ? (
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              filterDate={isMonday}
-              placeholderText="Select a Monday"
-              customInput={<StartDateProvider onClick={() => {}} />}
-            />
-          ) : (
-            <span>
-              {new Date(startDate || "").toLocaleString("default", {
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          )}
-          <span>to</span>
-          {openedLongSearchBar ? (
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              filterDate={isSunday}
-              placeholderText="Select a Sunday"
-              customInput={<EndDateProvider onClick={() => {}} />}
-            />
-          ) : (
-            <span>
-              {new Date(endDate || "").toLocaleString("default", {
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          )}
-
-          <span className="text-gray-400">|</span>
-          <span>
-            {startDate &&
-              endDate &&
-              calculateDateDifference(startDate, endDate)}
-          </span>
-        </div>
-      </div>
-      <div className="border-r border-gray-300 px-3 py-3">
-        <p
-          className={`text-rose-800 transform-all duration-500 ${
-            openedLongSearchBar ? "block" : "hidden"
-          }`}
-        >
-          Preffered Locations
-        </p>
-        {openedLongSearchBar ? (
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-500 whitespace-nowrap">
-              Hyderbad <KeyboardArrowDownIcon />
-            </span>
-            <div className="w-[16rem]" onClick={(e) => e.stopPropagation()}>
-              <Autocomplete
-                multiple
-                id="tags-standard"
-                options={locations}
-                getOptionLabel={(option) => option}
-                value={selectedLocations}
-                onChange={(_, newValue) => {
-                  setSelectedLocations(newValue);
-                }}
-                renderTags={(value, getTagProps) => {
-                  return value.map((option, index) => (
-                    <span
-                      {...getTagProps({ index })}
-                      className="text-black p-1 flex gap-1 items-center"
-                    >
-                      <span className="inline-block">{option}</span>
-                      <span
-                        className="cursor-pointer inline-block"
-                        onClick={() => {
-                          const newValues = selectedLocations.filter(
-                            (val) => val !== option
-                          );
-                          setSelectedLocations(newValues);
-                        }}
-                      >
-                        ✖
-                      </span>
-                      <span className="text-gray-500">|</span>
-                    </span>
-                    // <Chip
-                    //   label={option}
-                    //   deleteIcon={<CancelIcon />} // Add a cancel icon
-                    //   {...getTagProps({ index })}
-                    //   onDelete={() => {
-                    //     // Remove the selected value
-                    //     const newValues = selectedLocations.filter(
-                    //       (val) => val !== option
-                    //     );
-                    //     setSelectedLocations(newValues);
-                    //   }}
-                    // />
-                  ));
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label=""
-                    placeholder={`${
-                      selectedLocations.length === 0
-                        ? "Search location"
-                        : "Add More"
-                    }`}
-                    size="small"
-                    InputProps={{
-                      ...params.InputProps,
-                      disableUnderline: true,
-                      sx: { fontSize: "0.75rem" },
-                    }}
-                  />
-                )}
-                sx={{
-                  "& .MuiAutocomplete-tag": {
-                    display: "inline-flex",
-                    overflowX: "auto",
-                    whiteSpace: "nowrap",
-                  },
-                }}
-              />
-            </div>
-          </div>
-        ) : (
-          <>
-            {selectedLocations.length > 0 ? (
-              <span>
-                {selectedLocations.length > 1
-                  ? `${selectedLocations[0]}  + ${
-                      selectedLocations.length - 1
-                    } more`
-                  : selectedLocations[0]}{" "}
-              </span>
-            ) : (
-              <span>No location selected</span>
-            )}
-          </>
-        )}
-      </div>
-      <div className="px-3 py-3">
-        <p
-          className={`text-rose-800 transform-all duration-500 -mb-6 ${
-            openedLongSearchBar ? "block" : "hidden"
-          }`}
-        >
-          Radius
-        </p>
-        {openedLongSearchBar ? (
-          <span className="mt-1 inline-block">
-            {" "}
-            <NumberInput value={kmValue} setValue={setKmValue} />
-          </span>
-        ) : (
-          <span>{kmValue} km</span>
-        )}
-      </div>
-      <div
-        onClick={saveToUrl}
-        className="cursor-pointer text-white bg-rose-800 p-6 rounded-r-2xl"
-      >
-        <SearchIcon />
-        <span className={`${openedLongSearchBar ? "inline-block" : "hidden"}`}>
-          Search
-        </span>
-      </div>
+      <CampaignDuration
+        openedLongSearchBar={openedLongSearchBar}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+      />
+      <PrefferedLocations
+        openedLongSearchBar={openedLongSearchBar}
+        selectedLocations={selectedLocations}
+        setSelectedLocations={setSelectedLocations}
+      />
+      <Radius
+        openedLongSearchBar={openedLongSearchBar}
+        kmValue={kmValue}
+        setKmValue={setKmValue}
+      />
+      <SearchButton
+        kmValue={kmValue}
+        startDate={startDate}
+        endDate={endDate}
+        selectedLocations={selectedLocations}
+        openedLongSearchBar={openedLongSearchBar}
+      />
     </div>
   );
 }

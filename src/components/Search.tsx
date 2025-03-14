@@ -63,8 +63,8 @@ function Search() {
       onClick={handleSearchBar}
       className={`bg-white rounded-2xl flex items-center pl-4 text-sm transition-all duration-500 ${
         openedLongSearchBar
-          ? "shadow-2xl max-w-[80rem]"
-          : "shadow-md max-w-[50rem]"
+          ? "shadow-2xl min-w-[40rem] max-w-[120rem]"
+          : "shadow-md min-w-[20rem] max-w-[50rem]"
       }`}
     >
       <CampaignDuration

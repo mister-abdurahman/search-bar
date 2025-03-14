@@ -1,7 +1,8 @@
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { forwardRef, useState } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Chip, TextField } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { calculateDateDifference, isMonday, isSunday } from "../utils/helper";
@@ -179,10 +180,34 @@ function Search() {
                   return value.map((option, index) => (
                     <span
                       {...getTagProps({ index })}
-                      className="bg-rose-800 text-white p-1 rounded-full"
+                      className="text-black p-1 flex gap-1 items-center"
                     >
-                      {option}
+                      <span className="inline-block">{option}</span>
+                      <span
+                        className="cursor-pointer inline-block"
+                        onClick={() => {
+                          const newValues = selectedLocations.filter(
+                            (val) => val !== option
+                          );
+                          setSelectedLocations(newValues);
+                        }}
+                      >
+                        ✖
+                      </span>
+                      <span className="text-gray-500">|</span>
                     </span>
+                    // <Chip
+                    //   label={option}
+                    //   deleteIcon={<CancelIcon />} // Add a cancel icon
+                    //   {...getTagProps({ index })}
+                    //   onDelete={() => {
+                    //     // Remove the selected value
+                    //     const newValues = selectedLocations.filter(
+                    //       (val) => val !== option
+                    //     );
+                    //     setSelectedLocations(newValues);
+                    //   }}
+                    // />
                   ));
                 }}
                 renderInput={(params) => (
@@ -190,7 +215,11 @@ function Search() {
                     {...params}
                     variant="standard"
                     label=""
-                    placeholder="Search your locations"
+                    placeholder={`${
+                      selectedLocations.length === 0
+                        ? "Search location"
+                        : "Add More"
+                    }`}
                     size="small"
                     InputProps={{
                       ...params.InputProps,

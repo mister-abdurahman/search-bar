@@ -11,10 +11,13 @@ function Search() {
   };
   const getInitialLocations = () => {
     const params = new URLSearchParams(window.location.search);
+    // const convertedToArray = params.get("locations") ? params.get("locations")?.split(",").filter(Boolean) : [];
     const convertedToArray = (params.get("locations") || "")
       .split(",")
       .filter(Boolean);
-    return convertedToArray;
+    if (convertedToArray?.includes("[]")) return [];
+    else return convertedToArray;
+    // return convertedToArray;
   };
   const getInitialKm = () => {
     const params = new URLSearchParams(window.location.search);

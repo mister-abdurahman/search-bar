@@ -21,6 +21,7 @@ const NumberInput = ({ value, setValue }: IProps) => {
 
   return (
     <TextField
+      data-testId="number-input"
       label=""
       value={value}
       onChange={handleChange}

@@ -5,6 +5,7 @@ function Radius({ openedLongSearchBar, kmValue, setKmValue }: IRadius) {
   return (
     <div className={`px-3 py-3 ${openedLongSearchBar && "min-w-[14rem]"}`}>
       <p
+        data-testId="radius-text"
         className={`text-rose-800 transition-all duration-500 -mb-6 ${
           openedLongSearchBar ? "block" : "hidden"
         }`}
@@ -12,7 +13,7 @@ function Radius({ openedLongSearchBar, kmValue, setKmValue }: IRadius) {
         Radius
       </p>
       {openedLongSearchBar ? (
-        <span className="mt-1 inline-block">
+        <span className="mt-1 inline-block" id="number-input-container">
           {" "}
           <NumberInput value={kmValue} setValue={setKmValue} />
         </span>

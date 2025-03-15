@@ -37,6 +37,7 @@ function CampaignDuration({
   return (
     <div className="flex flex-col py-3 border-r border-gray-300 min-w-[12rem]">
       <p
+        data-testId="campaign-title"
         className={`text-rose-800 transform-all duration-500 ${
           openedLongSearchBar ? "block" : "hidden"
         }`}

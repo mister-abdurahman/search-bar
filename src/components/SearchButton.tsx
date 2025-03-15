@@ -25,6 +25,7 @@ function SearchButton({
   return (
     <div
       onClick={saveToUrl}
+      data-testId="save-button"
       className="cursor-pointer text-white bg-rose-800 self-stretch flex items-center px-3 rounded-r-2xl"
     >
       <SearchIcon />

@@ -11,12 +11,13 @@ function PrefferedLocations({
   return (
     <div className="border-r border-gray-300 px-3 py-3">
       <p
+        data-testId="location-title"
         className={`text-rose-800 ${openedLongSearchBar ? "block" : "hidden"}`}
       >
         Preffered Locations
       </p>
       {openedLongSearchBar ? (
-        <div className="flex items-center space-x-2">
+        <div id="select-location" className="flex items-center space-x-2">
           <span className="text-gray-500 whitespace-nowrap">
             Hyderbad <KeyboardArrowDownIcon />
           </span>

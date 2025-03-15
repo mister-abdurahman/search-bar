@@ -28,7 +28,10 @@ function SearchButton({
       className="cursor-pointer text-white bg-rose-800 self-stretch flex items-center px-3 rounded-r-2xl"
     >
       <SearchIcon />
-      <span className={`${openedLongSearchBar ? "inline-block" : "hidden"}`}>
+      <span
+        data-testId="search-span"
+        className={`${openedLongSearchBar ? "inline-block" : "hidden"}`}
+      >
         Search
       </span>
     </div>
